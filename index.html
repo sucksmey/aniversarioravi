@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Volta ao Sol</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Configuração Geral --- */
+        body {
+            margin: 0;
+            font-family: 'Fredoka', cursive;
+            overflow: hidden; /* Esconde barras de rolagem */
+            background-color: #f0f8ff; /* Azul bebê */
+        }
+
+        /* * O 'container' segura todas as cenas.
+         * Usamos 'position: relative' para que as cenas (position: absolute)
+         * fiquem umas sobre as outras.
+        */
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .scene {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0; /* Todas as cenas começam invisíveis */
+            visibility: hidden; /* Escondidas para não capturar cliques */
+        }
+
+        /* A cena ativa é a única visível */
+        .scene.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* --- Cena 1: O Botão --- */
+        #scene1 {
+            background-color: #a0e9ff; /* Azul céu claro */
+        }
+
+        #startButton {
+            font-family: 'Fredoka', cursive;
+            font-size: 1.5rem;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 50px;
+            background-color: #ff69b4; /* Rosa choque */
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 0 #c7508f;
+            transition: all 0.1s ease;
+        }
+
+        #startButton:active {
+            transform: translateY(5px);
+            box-shadow: 0 5px 0 #c7508f;
+        }
+
+        /* --- Cena 2: A Animação Espacial --- */
+        #scene2 {
+            background-color: #000020; /* Espaço sideral */
+        }
+
+        .sun {
+            width: 100px;
+            height: 100px;
+            background-color: #fafa4a;
+            border-radius: 50%;
+            box-shadow: 0 0 50px #fafa4a, 0 0 80px #ffc107;
+            position: absolute;
+            transition: opacity 0.5s ease;
+        }
+
+        /* A órbita é um container invisível que gira */
+        .orbit {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            position: absolute;
+            /* A animação 'spin' será aplicada via JS */
+        }
+
+        .rocket {
+            font-size: 3rem; /* 🚀 */
+            position: absolute;
+            top: -25px; /* Posiciona o foguete no topo da órbita */
+            left: calc(50% - 25px);
+            transform: rotate(90deg); /* Faz o foguete apontar para frente */
+        }
+
+        /* Animação da órbita */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* A explosão (começa invisível) */
+        .explosion {
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            background-color: #ffeb3b;
+            border-radius: 50%;
+            transform: scale(0);
+            /* A animação 'explode' será aplicada via JS */
+        }
+
+        /* Classe ativa para a explosão */
+        .explosion.active {
+            animation: explode 1s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(25); /* Tamanho da explosão */
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(30);
+                opacity: 0;
+            }
+        }
+
+
+        /* --- Cena 3: O Parque --- */
+        #scene3 {
+            /* Gradiente de céu e grama */
+            background: linear-gradient(to bottom, 
+                #87CEEB 0%, /* Céu */
+                #a0e9ff 60%,
+                #7CFC00 60%, /* Grama */
+                #32CD32 100%
+            );
+            justify-content: center;
+        }
+
+        #scene3 h2 {
+            color: #4b2c20; /* Marrom escuro */
+            font-size: 3rem;
+            text-align: center;
+            padding: 15px 25px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            z-index: 10; /* Garante que o texto fique na frente das nuvens */
+        }
+
+        /* Nuvens fofas */
+        .cloud {
+            width: 150px;
+            height: 50px;
+            background: #fff;
+            border-radius: 50px;
+            position: absolute;
+            opacity: 0.9;
+            animation: moveCloud 20s linear infinite;
+        }
+
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        .cloud::before {
+            width: 75px;
+            height: 75px;
+            top: -35px;
+            left: 20px;
+        }
+
+        .cloud::after {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            right: 30px;
+        }
+
+        /* Posições e velocidades diferentes para as nuvens */
+        .cloud1 {
+            top: 15%;
+            left: -200px;
+            animation-duration: 25s;
+        }
+        .cloud2 {
+            top: 30%;
+            left: -200px;
+            animation-duration: 20s;
+            animation-delay: -5s; /* Começa em um ponto diferente */
+        }
+        .cloud3 {
+            top: 20%;
+            left: -200px;
+            animation-duration: 30s;
+            animation-delay: -10s;
+        }
+
+        @keyframes moveCloud {
+            from {
+                left: -200px; /* Começa fora da tela à esquerda */
+            }
+            to {
+                left: 100vw; /* Termina fora da tela à direita */
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="container">
+
+        <div id="scene1" class="scene active">
+            <button id="startButton">vamos dar a primeira volta ao sol comigo?</button>
+        </div>
+
+        <div id="scene2" class="scene">
+            <div class="sun"></div>
+            <div class="orbit">
+                <div class="rocket">🚀</div>
+            </div>
+            <div class="explosion"></div>
+        </div>
+
+        <div id="scene3" class="scene">
+            <div class="cloud cloud1"></div>
+            <div class="cloud cloud2"></div>
+            <div class="cloud cloud3"></div>
+            <h2>obrigado pela sua presença :)</h2>
+        </div>
+
+    </div>
+
+    <script>
+        // Selecionando todos os elementos que vamos usar
+        const startButton = document.getElementById('startButton');
+        const scene1 = document.getElementById('scene1');
+        const scene2 = document.getElementById('scene2');
+        const scene3 = document.getElementById('scene3');
+        
+        const orbit = document.querySelector('.orbit');
+        const sun = document.querySelector('.sun');
+        const explosion = document.querySelector('.explosion');
+        const rocket = document.querySelector('.rocket');
+
+        // O que acontece quando o botão é clicado
+        startButton.addEventListener('click', () => {
+            
+            // 1. Troca da Cena 1 para a Cena 2
+            scene1.classList.remove('active');
+            scene2.classList.add('active');
+
+            // 2. Inicia a animação da órbita do foguete
+            // (Duração de 4 segundos, 1 vez)
+            orbit.style.animation = 'spin 4s linear 1';
+
+            // 3. O que acontece DEPOIS que a órbita termina (após 4 segundos)
+            setTimeout(() => {
+                
+                // O sol e o foguete somem
+                sun.style.opacity = '0';
+                rocket.style.opacity = '0';
+                
+                // A explosão é ativada
+                explosion.classList.add('active');
+
+                // 4. O que acontece DEPOIS que a explosão termina (1 segundo depois)
+                setTimeout(() => {
+                    // 5. Troca da Cena 2 para a Cena 3
+                    scene2.classList.remove('active');
+                    scene3.classList.add('active');
+                }, 1000); // 1000ms = 1 segundo (duração da explosão)
+
+            }, 4000); // 4000ms = 4 segundos (duração da órbita)
+        });
+    </script>
+
+</body>
+</html>
