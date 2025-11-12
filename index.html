@@ -166,6 +166,7 @@
             transition: all 1s ease-out;
             transform: scale(1);
             animation: pulse-sun 5s infinite ease-in-out;
+            z-index: 1; /* Garante que o sol fique atrás do foguete */
         }
         
         @keyframes pulse-sun {
@@ -173,16 +174,40 @@
             50% { transform: scale(1.05); box-shadow: 0 0 70px 30px #fff, 0 0 110px 60px var(--color-sun), 0 0 150px 90px #ffc107; }
         }
 
+        /* O Contêiner da Órbita */
+        #orbit-container {
+            width: 380px; /* Diâmetro da órbita */
+            height: 380px;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* A animação 'orbit-spin' será aplicada via JS */
+        }
+
         /* O Foguete CSS */
         #rocket {
             width: 40px;
             height: 80px;
             position: absolute;
-            /* A órbita será controlada por keyframes */
-            animation: orbit 4s linear 1 forwards;
-            z-index: 100;
+            top: 0; /* Começa no topo do orbit-container */
+            transform: translateY(-50%) rotate(0deg); /* Ajusta para centralizar e apontar */
+            z-index: 2; /* Garante que o foguete fique acima do sol */
             transition: opacity 0.5s;
+            /* A rotação em torno do sol será feita pelo #orbit-container */
         }
+
+        /* Animação para a rotação do foguete sobre o próprio eixo durante a órbita */
+        @keyframes rocket-self-rotate {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+        /* Animação para a órbita do foguete (no container) */
+        @keyframes orbit-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
 
         .rocket-body {
             width: 100%;
@@ -233,25 +258,6 @@
             100% { transform: translateX(-50%) scaleY(1) scaleX(1); opacity: 1; }
         }
 
-        /* Animação de órbita complexa */
-        @keyframes orbit {
-            0% {
-                transform: translate(-180px, 0) rotate(90deg);
-            }
-            25% {
-                transform: translate(0, 180px) rotate(180deg);
-            }
-            50% {
-                transform: translate(180px, 0) rotate(270deg);
-            }
-            75% {
-                transform: translate(0, -180px) rotate(360deg);
-            }
-            100% {
-                transform: translate(-180px, 0) rotate(450deg); /* 360 + 90 */
-            }
-        }
-
         /* Explosão "Supernova" */
         #explosion {
             width: 10px;
@@ -260,6 +266,7 @@
             border-radius: 50%;
             transform: scale(0);
             opacity: 0;
+            z-index: 3; /* Acima do sol e do foguete */
         }
         #explosion.active {
             animation: supernova 1.2s ease-out forwards;
@@ -414,58 +421,10 @@
             margin: 0;
         }
 
-        /* Nuvem do Convidado (dinâmica) */
-        .guest-cloud {
-            position: absolute; /* Para flutuar pela tela */
-            z-index: 5;
-            padding: 15px 30px;
-            animation: float-cloud 12s ease-in-out infinite;
-        }
-        .guest-cloud p {
-            font-family: var(--font-ui);
-            font-size: 1.2rem;
-            color: var(--color-text-dark);
-            margin: 0;
-        }
-
-        /* Animação de flutuação da nuvem */
-        @keyframes float-cloud {
-            0% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
-            100% { transform: translateY(0) rotate(0deg); }
-        }
-
-        /* Formulário de Nome */
-        #guest-form {
-            margin-top: 30px;
-            display: flex;
-            gap: 10px;
-            z-index: 20;
-            transition: all 0.5s;
-        }
-        #guest-name-input {
-            font-family: var(--font-ui);
-            font-size: 1.2rem;
-            padding: 10px 20px;
-            border: 3px solid var(--color-button-shadow);
-            border-radius: 30px;
-            background: #fff;
-        }
-        #guest-submit-btn {
-            font-family: var(--font-ui);
-            font-size: 1.2rem;
-            padding: 10px 25px;
-            border: none;
-            border-radius: 30px;
-            background: var(--color-button);
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 5px 0 var(--color-button-shadow);
-            transition: all 0.1s ease;
-        }
-        #guest-submit-btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px 0 var(--color-button-shadow);
+        /* Para centralizar o conteúdo do parque */
+        #p-content {
+            height: 100%;
+            width: 100%;
         }
 
     </style>
@@ -482,11 +441,13 @@
         <div id="scene2" class="scene">
             <div id="sun"></div>
             
-            <div id="rocket">
-                <div class="rocket-body">
-                    <div class="window"></div>
+            <div id="orbit-container">
+                <div id="rocket">
+                    <div class="rocket-body">
+                        <div class="window"></div>
+                    </div>
+                    <div class="flame"></div>
                 </div>
-                <div class="flame"></div>
             </div>
 
             <div id="explosion"></div>
@@ -505,13 +466,7 @@
                     <h2>Obrigado pela presença!</h2>
                     <h3>Ravi Luiz - 1 aninho</h3>
                 </div>
-
-                <div id="guest-form">
-                    <input type="text" id="guest-name-input" placeholder="Digite seu nome aqui...">
-                    <button id="guest-submit-btn">Enviar!</button>
-                </div>
-
-                <div id="guest-cloud-container"></div>
+                
             </div>
             
         </div>
@@ -525,15 +480,12 @@
         
         // Elementos da Cena 2
         const sun = document.getElementById('sun');
+        const orbitContainer = document.getElementById('orbit-container');
         const rocket = document.getElementById('rocket');
         const explosion = document.getElementById('explosion');
         
         // Elementos da Cena 3
         const parallaxLayers = document.querySelectorAll('.parallax-layer[data-speed]');
-        const guestForm = document.getElementById('guest-form');
-        const guestInput = document.getElementById('guest-name-input');
-        const guestButton = document.getElementById('guest-submit-btn');
-        const guestCloudContainer = document.getElementById('guest-cloud-container');
         const sparkleContainer = document.getElementById('sparkle-container');
         const scene3 = document.getElementById('scene3');
 
@@ -557,14 +509,28 @@
             // 1. Inicia a transição para a Cena 2
             goToScene(1);
 
-            // 2. Garante que os elementos da Cena 2 estão visíveis
+            // 2. Garante que os elementos da Cena 2 estão visíveis e na posição inicial
             sun.style.transform = 'scale(1)';
             sun.style.opacity = '1';
             rocket.style.opacity = '1';
             explosion.classList.remove('active');
+            
+            // Reinicia a animação de órbita do foguete (para o caso de ser rodado várias vezes)
+            orbitContainer.style.animation = 'none';
+            rocket.style.animation = 'none';
+            void orbitContainer.offsetWidth; // Trigger reflow
+            void rocket.offsetWidth; // Trigger reflow
+            
+            // Inicia a animação de órbita do container e a rotação do foguete
+            orbitContainer.style.animation = 'orbit-spin 4s linear 1 forwards'; // 1 volta de órbita
+            rocket.style.animation = 'rocket-self-rotate 1s linear infinite'; // Foguete gira em seu próprio eixo
 
             // 3. Após a órbita (4s), inicia a explosão
             setTimeout(() => {
+                // Para as animações do foguete e órbita
+                orbitContainer.style.animationPlayState = 'paused';
+                rocket.style.animationPlayState = 'paused';
+
                 // Esconde o Sol e o Foguete
                 sun.style.transform = 'scale(0)';
                 sun.style.opacity = '0';
@@ -573,7 +539,7 @@
                 // Ativa a explosão
                 explosion.classList.add('active');
                 
-            }, 4000); // 4000ms = 4s (duração da animação 'orbit')
+            }, 4000); // 4000ms = 4s (duração da animação 'orbit-spin')
 
             // 4. Após a explosão (1.2s), transiciona para a Cena 3
             setTimeout(() => {
@@ -599,27 +565,17 @@
             });
 
             // 2. Gerador de Partículas de Brilho
-            setInterval(createSparkle, 300);
-
-            // 3. Lógica do Formulário de Convidado
-            guestButton.addEventListener('click', () => {
-                const name = guestInput.value;
-                if (!name.trim()) return; // Não faz nada se o nome estiver vazio
-
-                // Esconde o formulário
-                guestForm.style.opacity = '0';
-                guestForm.style.pointerEvents = 'none';
-
-                // Cria a nuvem do convidado
-                createGuestCloud(name);
-            });
+            // Garante que não crie vários intervalos se initScene3 for chamada mais de uma vez
+            if (!scene3.dataset.sparkleInterval) {
+                scene3.dataset.sparkleInterval = setInterval(createSparkle, 300);
+            }
         }
 
         function createSparkle() {
             const sparkle = document.createElement('div');
             sparkle.className = 'sparkle';
             sparkle.style.left = `${Math.random() * 100}%`;
-            sparkle.style.bottom = '0px'; // Começa na grama
+            sparkle.style.bottom = `${Math.random() * 20}%`; // Começa mais perto do chão, mas variado
             
             sparkleContainer.appendChild(sparkle);
 
@@ -629,30 +585,7 @@
             }, 5000); // 5s (duração da animação float-up)
         }
 
-        function createGuestCloud(name) {
-            const cloud = document.createElement('div');
-            cloud.className = 'cloud guest-cloud';
-            cloud.innerHTML = `<p>${name}</p>`;
-
-            // Posição e animação aleatórias
-            const randomX = Math.random() * 60 + 20; // Entre 20% e 80% da tela
-            const randomY = Math.random() * 20 + 40; // Entre 40% e 60% da tela
-            const randomDelay = -(Math.random() * 12); // Começa em um ponto aleatório da animação
-
-            cloud.style.left = `${randomX}%`;
-            cloud.style.top = `${randomY}%`;
-            cloud.style.animationDelay = `${randomDelay}s`;
-            cloud.style.transform = 'scale(0)'; // Começa invisível
-
-            guestCloudContainer.appendChild(cloud);
-
-            // Animação de "pop"
-            setTimeout(() => {
-                cloud.style.transform = 'scale(1)';
-            }, 100);
-        }
-
-        // Inicia na Cena 1
+        // Inicia na Cena 1 quando a página carrega
         goToScene(0);
 
     </script>
