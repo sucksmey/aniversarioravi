@@ -3,29 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Volta ao Sol</title>
-    
+    <title>A Primeira Volta ao Sol do Ravi Luiz!</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&family=Balsamiq+Sans:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    
     <style>
+        /* --- Variáveis de Design --- */
+        :root {
+            --font-display: 'Pacifico', cursive; /* Para títulos principais */
+            --font-body: 'Fredoka', sans-serif; /* Para texto geral */
+            --font-ui: 'Balsamiq Sans', cursive; /* Para botões */
+            
+            --color-sky-light: #cbe9f9;
+            --color-sky-dark: #87CEEB;
+            --color-space: #0b0c1d;
+            --color-sun: #FFD700;
+            --color-flame: #FF6347;
+            --color-grass: #88d498;
+            --color-button: #ff7b9f;
+            --color-button-shadow: #e0688a;
+            --color-text-dark: #3a2b1f;
+            --color-cloud: #fdfdfd;
+        }
+
         /* --- Configuração Geral --- */
         body {
             margin: 0;
-            font-family: 'Fredoka', cursive;
-            overflow: hidden; /* Esconde barras de rolagem */
-            background-color: #f0f8ff; /* Azul bebê */
+            font-family: var(--font-body);
+            overflow: hidden; /* Essencial para a mágica */
+            background-color: var(--color-space);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
-        /* * O 'container' segura todas as cenas.
-         * Usamos 'position: relative' para que as cenas (position: absolute)
-         * fiquem umas sobre as outras.
-        */
         #container {
             width: 100vw;
             height: 100vh;
             position: relative;
+            perspective: 1000px; /* Ativa a perspectiva 3D para transições */
         }
 
         .scene {
@@ -38,194 +57,415 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            transition: opacity 0.5s ease-in-out;
-            opacity: 0; /* Todas as cenas começam invisíveis */
-            visibility: hidden; /* Escondidas para não capturar cliques */
+            overflow: hidden;
+            
+            /* Animação de transição de cena */
+            transition: opacity 1.2s ease-in-out, transform 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.8) rotateY(90deg); /* Começa "virada" e pequena */
         }
 
-        /* A cena ativa é a única visível */
         .scene.active {
             opacity: 1;
             visibility: visible;
+            transform: scale(1) rotateY(0deg); /* Entra na tela */
         }
 
-        /* --- Cena 1: O Botão --- */
+        .scene.exiting {
+            opacity: 0;
+            transform: scale(1.2) rotateY(-90deg); /* Sai da tela */
+        }
+
+        /* --- Cena 1: O Convite Inicial --- */
         #scene1 {
-            background-color: #a0e9ff; /* Azul céu claro */
+            background: linear-gradient(to top, var(--color-sky-dark), var(--color-sky-light));
+            gap: 20px;
+        }
+        
+        #scene1::before { /* Partículas de "poeira mágica" */
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="white" opacity="0.8"/><circle cx="30" cy="80" r="1.5" fill="white" opacity="0.7"/><circle cx="50" cy="50" r="1" fill="white" opacity="0.9"/><circle cx="70" cy="20" r="1.2" fill="white" opacity="0.6"/><circle cx="90" cy="90" r="1" fill="white" opacity="0.8"/></svg>');
+            background-size: 100px 100px;
+            animation: sparkle-float 15s linear infinite;
+            opacity: 0.5;
+        }
+
+        #intro-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            color: var(--color-text-dark);
+            text-shadow: 2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,0.1);
+            text-align: center;
+            line-height: 1.2;
         }
 
         #startButton {
-            font-family: 'Fredoka', cursive;
-            font-size: 1.5rem;
-            padding: 20px 40px;
+            font-family: var(--font-ui);
+            font-size: 1.8rem;
+            padding: 20px 45px;
             border: none;
             border-radius: 50px;
-            background-color: #ff69b4; /* Rosa choque */
+            background-color: var(--color-button);
             color: white;
             cursor: pointer;
-            box-shadow: 0 10px 0 #c7508f;
-            transition: all 0.1s ease;
+            box-shadow: 0 10px 0 var(--color-button-shadow);
+            transition: all 0.1s ease-out;
+            animation: pulse-button 2s infinite ease-in-out;
+            z-index: 10;
         }
 
         #startButton:active {
             transform: translateY(5px);
-            box-shadow: 0 5px 0 #c7508f;
+            box-shadow: 0 5px 0 var(--color-button-shadow);
         }
 
-        /* --- Cena 2: A Animação Espacial --- */
+        @keyframes pulse-button {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes sparkle-float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100px); }
+        }
+
+        /* --- Cena 2: A Viagem Espacial --- */
         #scene2 {
-            background-color: #000020; /* Espaço sideral */
+            background-color: var(--color-space);
+            background-image: 
+                /* Estrelas piscando (camada 1) */
+                radial-gradient(white, rgba(255,255,255,0.2) 2px, transparent 40px),
+                /* Estrelas piscando (camada 2) */
+                radial-gradient(white, rgba(255,255,255,0.15) 1px, transparent 30px),
+                /* Nebulosa sutil */
+                radial-gradient(rgba(100, 150, 255, 0.1), transparent 70%);
+            background-size: 550px 550px, 350px 350px, 100% 100%;
+            background-position: 0 0, 40px 60px, 0 0;
+            animation: twinkle-stars 10s linear infinite;
         }
 
-        .sun {
-            width: 100px;
-            height: 100px;
-            background-color: #fafa4a;
+        @keyframes twinkle-stars {
+            from { background-position: 0 0, 40px 60px, 0 0; }
+            to { background-position: -550px -550px, -350px -350px, 0 0; }
+        }
+
+        #sun {
+            width: 150px;
+            height: 150px;
+            background-color: var(--color-sun);
             border-radius: 50%;
-            box-shadow: 0 0 50px #fafa4a, 0 0 80px #ffc107;
             position: absolute;
-            transition: opacity 0.5s ease;
+            box-shadow: 
+                0 0 60px 20px #fff, 
+                0 0 100px 50px var(--color-sun),
+                0 0 140px 80px #ffc107;
+            transition: all 1s ease-out;
+            transform: scale(1);
+            animation: pulse-sun 5s infinite ease-in-out;
+        }
+        
+        @keyframes pulse-sun {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 60px 20px #fff, 0 0 100px 50px var(--color-sun), 0 0 140px 80px #ffc107; }
+            50% { transform: scale(1.05); box-shadow: 0 0 70px 30px #fff, 0 0 110px 60px var(--color-sun), 0 0 150px 90px #ffc107; }
         }
 
-        /* A órbita é um container invisível que gira */
-        .orbit {
-            width: 300px;
-            height: 300px;
+        /* O Foguete CSS */
+        #rocket {
+            width: 40px;
+            height: 80px;
+            position: absolute;
+            /* A órbita será controlada por keyframes */
+            animation: orbit 4s linear 1 forwards;
+            z-index: 100;
+            transition: opacity 0.5s;
+        }
+
+        .rocket-body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+            border-radius: 50% 50% 10% 10% / 60% 60% 10% 10%;
+            position: relative;
+            border: 2px solid #ccc;
+        }
+        .rocket-body::before { /* Nariz */
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 25px solid var(--color-flame);
+        }
+        .window {
+            width: 20px;
+            height: 20px;
+            background: var(--color-sky-light);
+            border: 3px solid #555;
             border-radius: 50%;
             position: absolute;
-            /* A animação 'spin' será aplicada via JS */
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
         }
-
-        .rocket {
-            font-size: 3rem; /* 🚀 */
+        .flame {
             position: absolute;
-            top: -25px; /* Posiciona o foguete no topo da órbita */
-            left: calc(50% - 25px);
-            transform: rotate(90deg); /* Faz o foguete apontar para frente */
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 40px;
+            background: linear-gradient(var(--color-flame), #ffc107);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.1s infinite;
         }
 
-        /* Animação da órbita */
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scaleY(1) scaleX(1); opacity: 1; }
+            50% { transform: translateX(-55%) scaleY(1.2) scaleX(1.1); opacity: 0.9; }
+            100% { transform: translateX(-50%) scaleY(1) scaleX(1); opacity: 1; }
+        }
+
+        /* Animação de órbita complexa */
+        @keyframes orbit {
+            0% {
+                transform: translate(-180px, 0) rotate(90deg);
             }
-            to {
-                transform: rotate(360deg);
+            25% {
+                transform: translate(0, 180px) rotate(180deg);
+            }
+            50% {
+                transform: translate(180px, 0) rotate(270deg);
+            }
+            75% {
+                transform: translate(0, -180px) rotate(360deg);
+            }
+            100% {
+                transform: translate(-180px, 0) rotate(450deg); /* 360 + 90 */
             }
         }
 
-        /* A explosão (começa invisível) */
-        .explosion {
+        /* Explosão "Supernova" */
+        #explosion {
             width: 10px;
             height: 10px;
             position: absolute;
-            background-color: #ffeb3b;
             border-radius: 50%;
             transform: scale(0);
-            /* A animação 'explode' será aplicada via JS */
+            opacity: 0;
+        }
+        #explosion.active {
+            animation: supernova 1.2s ease-out forwards;
         }
 
-        /* Classe ativa para a explosão */
-        .explosion.active {
-            animation: explode 1s ease-out forwards;
-        }
-
-        @keyframes explode {
+        @keyframes supernova {
             0% {
                 transform: scale(0);
                 opacity: 1;
+                box-shadow: 0 0 10px 10px #fff,
+                            0 0 20px 20px var(--color-sun),
+                            0 0 30px 30px var(--color-flame);
             }
-            50% {
-                transform: scale(25); /* Tamanho da explosão */
-                opacity: 0.8;
+            80% {
+                transform: scale(30);
+                opacity: 0.5;
+                box-shadow: 0 0 200px 100px #fff,
+                            0 0 300px 150px var(--color-sun),
+                            0 0 400px 200px var(--color-flame);
             }
             100% {
-                transform: scale(30);
+                transform: scale(35);
                 opacity: 0;
             }
         }
 
 
-        /* --- Cena 3: O Parque --- */
+        /* --- Cena 3: O Parque Mágico (Com Parallax) --- */
         #scene3 {
-            /* Gradiente de céu e grama */
-            background: linear-gradient(to bottom, 
-                #87CEEB 0%, /* Céu */
-                #a0e9ff 60%,
-                #7CFC00 60%, /* Grama */
-                #32CD32 100%
-            );
-            justify-content: center;
+            background-color: var(--color-sky-light); /* Céu de fundo */
         }
 
-        #scene3 h2 {
-            color: #4b2c20; /* Marrom escuro */
-            font-size: 3rem;
-            text-align: center;
-            padding: 15px 25px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 20px;
-            z-index: 10; /* Garante que o texto fique na frente das nuvens */
-        }
-
-        /* Nuvens fofas */
-        .cloud {
-            width: 150px;
-            height: 50px;
-            background: #fff;
-            border-radius: 50px;
+        .parallax-layer {
             position: absolute;
-            opacity: 0.9;
-            animation: moveCloud 20s linear infinite;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); /* Suaviza o parallax */
+        }
+        
+        /* Camada 1: Céu (Estático) */
+        #p-sky {
+            background: linear-gradient(to bottom, var(--color-sky-light) 50%, var(--color-sky-dark));
         }
 
+        /* Camada 2: Nuvens de Fundo */
+        #p-clouds-back {
+            background-image: 
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100"><path d="M50 80 Q 70 40 100 60 Q 130 30 160 60 Q 190 40 210 60 Q 230 50 250 70 L 50 80 Z" fill="rgba(255,255,255,0.5)"/></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100"><path d="M30 70 Q 50 30 80 50 Q 110 20 140 50 Q 170 30 190 50 Q 210 40 230 60 L 30 70 Z" fill="rgba(255,255,255,0.4)"/></svg>');
+            background-repeat: repeat-x;
+            background-position: 0 10%, 150px 20%;
+            background-size: 400px, 300px;
+            animation: slow-pan 50s linear infinite;
+        }
+
+        /* Camada 3: Grama */
+        #p-grass {
+            background: var(--color-grass);
+            height: 30%;
+            top: 70%;
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Camada 4: Conteúdo Principal (Mensagens e Nuvens) */
+        #p-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 20;
+        }
+        
+        /* Camada 5: Partículas de Brilho */
+        #sparkle-container {
+            z-index: 30;
+            pointer-events: none; /* Permite clicar através */
+        }
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #fff, 0 0 20px var(--color-sun);
+            animation: float-up 5s linear forwards;
+        }
+
+        @keyframes float-up {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-500px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes slow-pan {
+            from { background-position: 0 10%, 150px 20%; }
+            to { background-position: -400px 10%, -150px 20%; }
+        }
+
+        /* --- Estilo das Nuvens de Mensagem --- */
+        .cloud {
+            background: var(--color-cloud);
+            padding: 20px 35px;
+            border-radius: 70px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+            margin: 20px;
+            animation: float-cloud 8s ease-in-out infinite;
+            border: 5px solid rgba(255, 255, 255, 0.8);
+        }
+
+        /* Forma de nuvem (usando pseudo-elementos) */
         .cloud::before, .cloud::after {
             content: '';
             position: absolute;
-            background: #fff;
+            background: var(--color-cloud);
             border-radius: 50%;
+            z-index: -1;
         }
-
         .cloud::before {
-            width: 75px;
-            height: 75px;
-            top: -35px;
-            left: 20px;
+            width: 100px; height: 100px;
+            top: -60px; left: 30px;
         }
-
         .cloud::after {
-            width: 50px;
-            height: 50px;
-            top: -25px;
-            right: 30px;
+            width: 120px; height: 120px;
+            top: -50px; right: 20px;
+        }
+        
+        /* Nuvem Principal (Ravi) */
+        #ravi-cloud {
+            z-index: 10;
+        }
+        #ravi-cloud h2 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            color: var(--color-text-dark);
+            margin: 0;
+            line-height: 1.2;
+        }
+        #ravi-cloud h3 {
+            font-family: var(--font-ui);
+            font-size: 1.5rem;
+            color: var(--color-button);
+            margin: 0;
         }
 
-        /* Posições e velocidades diferentes para as nuvens */
-        .cloud1 {
-            top: 15%;
-            left: -200px;
-            animation-duration: 25s;
+        /* Nuvem do Convidado (dinâmica) */
+        .guest-cloud {
+            position: absolute; /* Para flutuar pela tela */
+            z-index: 5;
+            padding: 15px 30px;
+            animation: float-cloud 12s ease-in-out infinite;
         }
-        .cloud2 {
-            top: 30%;
-            left: -200px;
-            animation-duration: 20s;
-            animation-delay: -5s; /* Começa em um ponto diferente */
-        }
-        .cloud3 {
-            top: 20%;
-            left: -200px;
-            animation-duration: 30s;
-            animation-delay: -10s;
+        .guest-cloud p {
+            font-family: var(--font-ui);
+            font-size: 1.2rem;
+            color: var(--color-text-dark);
+            margin: 0;
         }
 
-        @keyframes moveCloud {
-            from {
-                left: -200px; /* Começa fora da tela à esquerda */
-            }
-            to {
-                left: 100vw; /* Termina fora da tela à direita */
-            }
+        /* Animação de flutuação da nuvem */
+        @keyframes float-cloud {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        /* Formulário de Nome */
+        #guest-form {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+            transition: all 0.5s;
+        }
+        #guest-name-input {
+            font-family: var(--font-ui);
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border: 3px solid var(--color-button-shadow);
+            border-radius: 30px;
+            background: #fff;
+        }
+        #guest-submit-btn {
+            font-family: var(--font-ui);
+            font-size: 1.2rem;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 30px;
+            background: var(--color-button);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 0 var(--color-button-shadow);
+            transition: all 0.1s ease;
+        }
+        #guest-submit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 var(--color-button-shadow);
         }
 
     </style>
@@ -235,68 +475,186 @@
     <div id="container">
 
         <div id="scene1" class="scene active">
+            <h1 id="intro-title">Ravi Luiz<br>faz 1 aninho!</h1>
             <button id="startButton">vamos dar a primeira volta ao sol comigo?</button>
         </div>
 
         <div id="scene2" class="scene">
-            <div class="sun"></div>
-            <div class="orbit">
-                <div class="rocket">🚀</div>
+            <div id="sun"></div>
+            
+            <div id="rocket">
+                <div class="rocket-body">
+                    <div class="window"></div>
+                </div>
+                <div class="flame"></div>
             </div>
-            <div class="explosion"></div>
+
+            <div id="explosion"></div>
         </div>
 
         <div id="scene3" class="scene">
-            <div class="cloud cloud1"></div>
-            <div class="cloud cloud2"></div>
-            <div class="cloud cloud3"></div>
-            <h2>obrigado pela sua presença :)</h2>
+            
+            <div class="parallax-layer" id="p-sky"></div>
+            <div class="parallax-layer" id="p-clouds-back" data-speed="2"></div>
+            <div class="parallax-layer" id="p-grass" data-speed="8"></div>
+            <div class="parallax-layer" id="sparkle-container" data-speed="1"></div>
+            
+            <div class="parallax-layer" id="p-content" data-speed="5">
+                
+                <div id="ravi-cloud" class="cloud">
+                    <h2>Obrigado pela presença!</h2>
+                    <h3>Ravi Luiz - 1 aninho</h3>
+                </div>
+
+                <div id="guest-form">
+                    <input type="text" id="guest-name-input" placeholder="Digite seu nome aqui...">
+                    <button id="guest-submit-btn">Enviar!</button>
+                </div>
+
+                <div id="guest-cloud-container"></div>
+            </div>
+            
         </div>
 
     </div>
 
     <script>
-        // Selecionando todos os elementos que vamos usar
+        // Selecionando todos os elementos principais
+        const scenes = document.querySelectorAll('.scene');
         const startButton = document.getElementById('startButton');
-        const scene1 = document.getElementById('scene1');
-        const scene2 = document.getElementById('scene2');
-        const scene3 = document.getElementById('scene3');
         
-        const orbit = document.querySelector('.orbit');
-        const sun = document.querySelector('.sun');
-        const explosion = document.querySelector('.explosion');
-        const rocket = document.querySelector('.rocket');
+        // Elementos da Cena 2
+        const sun = document.getElementById('sun');
+        const rocket = document.getElementById('rocket');
+        const explosion = document.getElementById('explosion');
+        
+        // Elementos da Cena 3
+        const parallaxLayers = document.querySelectorAll('.parallax-layer[data-speed]');
+        const guestForm = document.getElementById('guest-form');
+        const guestInput = document.getElementById('guest-name-input');
+        const guestButton = document.getElementById('guest-submit-btn');
+        const guestCloudContainer = document.getElementById('guest-cloud-container');
+        const sparkleContainer = document.getElementById('sparkle-container');
+        const scene3 = document.getElementById('scene3');
 
-        // O que acontece quando o botão é clicado
+        // --- Gerenciador de Cenas ---
+        function goToScene(sceneIndex) {
+            scenes.forEach((scene, index) => {
+                if (index === sceneIndex) {
+                    scene.classList.remove('exiting');
+                    scene.classList.add('active');
+                } else if (scene.classList.contains('active')) {
+                    scene.classList.remove('active');
+                    scene.classList.add('exiting');
+                } else {
+                    scene.classList.remove('active', 'exiting');
+                }
+            });
+        }
+
+        // --- Lógica da Animação ---
         startButton.addEventListener('click', () => {
-            
-            // 1. Troca da Cena 1 para a Cena 2
-            scene1.classList.remove('active');
-            scene2.classList.add('active');
+            // 1. Inicia a transição para a Cena 2
+            goToScene(1);
 
-            // 2. Inicia a animação da órbita do foguete
-            // (Duração de 4 segundos, 1 vez)
-            orbit.style.animation = 'spin 4s linear 1';
+            // 2. Garante que os elementos da Cena 2 estão visíveis
+            sun.style.transform = 'scale(1)';
+            sun.style.opacity = '1';
+            rocket.style.opacity = '1';
+            explosion.classList.remove('active');
 
-            // 3. O que acontece DEPOIS que a órbita termina (após 4 segundos)
+            // 3. Após a órbita (4s), inicia a explosão
             setTimeout(() => {
-                
-                // O sol e o foguete somem
+                // Esconde o Sol e o Foguete
+                sun.style.transform = 'scale(0)';
                 sun.style.opacity = '0';
                 rocket.style.opacity = '0';
                 
-                // A explosão é ativada
+                // Ativa a explosão
                 explosion.classList.add('active');
+                
+            }, 4000); // 4000ms = 4s (duração da animação 'orbit')
 
-                // 4. O que acontece DEPOIS que a explosão termina (1 segundo depois)
-                setTimeout(() => {
-                    // 5. Troca da Cena 2 para a Cena 3
-                    scene2.classList.remove('active');
-                    scene3.classList.add('active');
-                }, 1000); // 1000ms = 1 segundo (duração da explosão)
-
-            }, 4000); // 4000ms = 4 segundos (duração da órbita)
+            // 4. Após a explosão (1.2s), transiciona para a Cena 3
+            setTimeout(() => {
+                goToScene(2);
+                initScene3(); // Ativa os efeitos mágicos da cena 3
+            }, 5200); // 4000ms (órbita) + 1200ms (explosão)
         });
+
+        // --- Lógica da Cena 3 (Mágica) ---
+        function initScene3() {
+            // 1. Efeito Parallax no movimento do mouse
+            scene3.addEventListener('mousemove', (e) => {
+                // Calcula a posição do mouse de -0.5 a 0.5
+                let x = (e.clientX - window.innerWidth / 2) / window.innerWidth;
+                let y = (e.clientY - window.innerHeight / 2) / window.innerHeight;
+
+                parallaxLayers.forEach(layer => {
+                    const speed = layer.getAttribute('data-speed');
+                    const xOffset = -(x * speed * 20); // Multiplica para o efeito ser visível
+                    const yOffset = -(y * speed * 10);
+                    layer.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+                });
+            });
+
+            // 2. Gerador de Partículas de Brilho
+            setInterval(createSparkle, 300);
+
+            // 3. Lógica do Formulário de Convidado
+            guestButton.addEventListener('click', () => {
+                const name = guestInput.value;
+                if (!name.trim()) return; // Não faz nada se o nome estiver vazio
+
+                // Esconde o formulário
+                guestForm.style.opacity = '0';
+                guestForm.style.pointerEvents = 'none';
+
+                // Cria a nuvem do convidado
+                createGuestCloud(name);
+            });
+        }
+
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = `${Math.random() * 100}%`;
+            sparkle.style.bottom = '0px'; // Começa na grama
+            
+            sparkleContainer.appendChild(sparkle);
+
+            // Remove a partícula após a animação
+            setTimeout(() => {
+                sparkle.remove();
+            }, 5000); // 5s (duração da animação float-up)
+        }
+
+        function createGuestCloud(name) {
+            const cloud = document.createElement('div');
+            cloud.className = 'cloud guest-cloud';
+            cloud.innerHTML = `<p>${name}</p>`;
+
+            // Posição e animação aleatórias
+            const randomX = Math.random() * 60 + 20; // Entre 20% e 80% da tela
+            const randomY = Math.random() * 20 + 40; // Entre 40% e 60% da tela
+            const randomDelay = -(Math.random() * 12); // Começa em um ponto aleatório da animação
+
+            cloud.style.left = `${randomX}%`;
+            cloud.style.top = `${randomY}%`;
+            cloud.style.animationDelay = `${randomDelay}s`;
+            cloud.style.transform = 'scale(0)'; // Começa invisível
+
+            guestCloudContainer.appendChild(cloud);
+
+            // Animação de "pop"
+            setTimeout(() => {
+                cloud.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        // Inicia na Cena 1
+        goToScene(0);
+
     </script>
 
 </body>
